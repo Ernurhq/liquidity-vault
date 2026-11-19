@@ -1,0 +1,7 @@
+target/
+.anchor/
+node_modules/
+.keys/
+*.so
+*-keypair.json
+.DS_Store
