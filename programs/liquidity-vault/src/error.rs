@@ -6,4 +6,6 @@ pub enum VaultError {
     Unauthorized,
     #[msg("Сумма должна быть больше нуля")]
     ZeroAmount,
+    #[msg("Переполнение при вычислении")]
+    MathOverflow,
 }

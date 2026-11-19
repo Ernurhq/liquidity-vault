@@ -2,6 +2,7 @@ use anchor_lang::prelude::*;
 
 pub mod error;
 pub mod instructions;
+pub mod math;
 pub mod state;
 
 pub use instructions::*;
@@ -21,5 +22,10 @@ pub mod liquidity_vault {
     /// Создаёт «карточку» пользователя (PDA из адреса vault и адреса владельца).
     pub fn create_user_card(ctx: Context<CreateUserCard>) -> Result<()> {
         instructions::create_user_card::handle_create_user_card(ctx)
+    }
+
+    /// Вносит токены в vault и выпускает share-токены пропорционально доле.
+    pub fn deposit(ctx: Context<Deposit>, amount: u64) -> Result<()> {
+        instructions::deposit::handle_deposit(ctx, amount)
     }
 }

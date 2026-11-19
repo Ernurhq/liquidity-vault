@@ -12,7 +12,7 @@ liquidity_vault = "BnrJebxJS5VcX9BQ8SyCsWKNRtioVPDpU9BfbsczTPQ6"
 liquidity_vault = "BnrJebxJS5VcX9BQ8SyCsWKNRtioVPDpU9BfbsczTPQ6"
 
 [provider]
-cluster = "devnet"
+cluster = "localnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]

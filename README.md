@@ -84,3 +84,17 @@ yarn init-devnet          # создаст токен, vault, карточку �
 ## Безопасность
 
 В репозиторий не попадают ключи и seed-фразы (см. `.gitignore`). Работаем только в localnet и devnet.
+
+## Неделя 9: депозит и share-токены
+
+Действие `deposit(amount)`:
+
+1. посчитать долю: первый вкладчик получает share-токенов столько же, сколько внёс; дальше
+   `amount × выпущено share ÷ токенов в vault` (округление вниз);
+2. перевести токены пользователя в `token_vault` (подписывает сам пользователь);
+3. выпустить share-токены на кошелёк пользователя (подписывает программа через PDA `vault_authority`);
+4. обновить `VaultState.total_deposited` и `UserCard.deposited`. Депозит нуля запрещён.
+
+Пример: в vault 1100 токенов и 1000 share-токенов, вносим 110 → получаем 100 share-токенов.
+
+- Транзакция депозита: https://explorer.solana.com/tx/3avq3vYbUuvzhocq8DE2G7mB3B9L7NGNBtNJE9LRJDzfPKebzCy7on8s1e26rdMWyC6YGueN2YyHoKCMWGBAMQez?cluster=devnet
