@@ -2,14 +2,17 @@
   "name": "raydium-clmm-scripts",
   "version": "1.0.0",
   "private": true,
-  "description": "Неделя 11: свои токены, CLMM-пул Raydium и позиция в devnet",
+  "description": "Недели 11-12: свои токены, CLMM-пул Raydium, позиция и обмен из vault в devnet",
   "scripts": {
     "tokens": "tsx src/01-create-tokens.ts",
     "pool": "tsx src/02-create-pool.ts",
     "position": "tsx src/03-create-position.ts",
-    "show": "tsx src/04-show.ts"
+    "show": "tsx src/04-show.ts",
+    "vault-init": "tsx src/05-vault-init-swap.ts",
+    "vault-swap": "tsx src/06-vault-swap.ts"
   },
   "dependencies": {
+    "@anchor-lang/core": "^1.0.2",
     "@raydium-io/raydium-sdk-v2": "latest",
     "@solana/spl-token": "^0.4.9",
     "@solana/web3.js": "^1.98.0",

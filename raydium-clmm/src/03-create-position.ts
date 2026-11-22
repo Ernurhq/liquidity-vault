@@ -37,7 +37,7 @@ const priceToTick = (price: Decimal, decA: number, decB: number, spacing: number
   const upperPrice = price.mul(1 + RANGE);
   const tickLower = priceToTick(lowerPrice, poolInfo.mintA.decimals, poolInfo.mintB.decimals, spacing, false);
   const tickUpper = priceToTick(upperPrice, poolInfo.mintA.decimals, poolInfo.mintB.decimals, spacing, true);
-  console.log("Текущая цена    ", price.toString(), `(${poolInfo.mintB.symbol} за 1 ${poolInfo.mintA.symbol})`);
+  console.log("Текущая цена    ", price.toString(), "(токена B за 1 токен A)");
   console.log("Диапазон цен    ", lowerPrice.toString(), "-", upperPrice.toString());
   console.log("Тики            ", tickLower, "-", tickUpper, "(шаг", spacing + ")");
 
@@ -54,6 +54,7 @@ const priceToTick = (price: Decimal, decA: number, decB: number, spacing: number
     amountHasFee: true,
     epochInfo,
   });
+  // Лимит токена B: берём большую из двух оценок SDK и добавляем 2% запаса (защита от slippage).
   const needB: BN = res.amountB.amount.gt(res.amountSlippageB.amount) ? res.amountB.amount : res.amountSlippageB.amount;
   const otherAmountMax = needB.mul(new BN(102)).div(new BN(100));
   console.log("Нужно токена B  ", res.amountB.amount.toString(), "| лимит:", otherAmountMax.toString());

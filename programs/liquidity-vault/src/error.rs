@@ -10,4 +10,10 @@ pub enum VaultError {
     MathOverflow,
     #[msg("Недостаточно share-токенов")]
     InsufficientShares,
+    #[msg("Пул Raydium не подходит или переданы чужие аккаунты")]
+    InvalidPool,
+    #[msg("Обмен дал меньше минимума (slippage)")]
+    SlippageExceeded,
+    #[msg("В хранилище недостаточно токенов для обмена")]
+    InsufficientFunds,
 }

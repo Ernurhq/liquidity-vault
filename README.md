@@ -157,3 +157,40 @@ Token Program, сделанные из нашей программы:
 «длиннее» верхнего, поэтому B нужно примерно на 12% больше (около 112,17 против 100). Небольшую добавку даёт и округление
 границ к шагу тиков (-1080 и 960). Если цена уйдёт выше верхней границы, вся позиция станет токеном B, если ниже нижней,
 вся станет токеном A.
+
+## Неделя 12: swap через Raydium
+
+Vault сам обменивает токены через наш CLMM-пул из недели 11. Это тот же CPI, что на неделе 10,
+только вызывается не Token Program, а программа Raydium CLMM, и подписывает обмен PDA `vault_authority`.
+
+**Новые аккаунты.** `SwapPool` (PDA `["swap_pool", vault_state]`) хранит адрес пула, программу Raydium и
+токен B. Второе хранилище `token_vault_b` (PDA `["token_vault_b", vault_state]`) принадлежит `vault_authority`.
+Старый `VaultState` не менялся, поэтому уже созданный vault продолжает работать.
+
+**Действия:**
+- `init_swap_pool` (только админ): проверяет, что пул принадлежит программе Raydium и состоит ровно из наших двух
+  токенов, создаёт `token_vault_b` и записывает `SwapPool`.
+- `swap(a_to_b, amount_in, min_amount_out, sqrt_price_limit_x64)` (только админ): отдаёт `amount_in` одного токена
+  в пул и получает другой. `min_amount_out` это минимум, который согласны получить (в скриптах на 1% меньше
+  расчётного). Если пул даст меньше, обмен отменяется.
+
+**Как устроен вызов Raydium (`swap_v2`).** Библиотеку Raydium мы не подключали (у неё свои требования к версии
+Anchor), инструкция собирается вручную по официальному IDL (`raydium-io/raydium-idl`): 13 аккаунтов в порядке
+`payer, amm_config, pool_state, input_token_account, output_token_account, input_vault, output_vault,
+observation_state, token_program, token_program_2022, memo_program, input_vault_mint, output_vault_mint`, далее
+tick-массивы пула как remaining accounts; данные: discriminator + `amount` + `other_amount_threshold` +
+`sqrt_price_limit_x64` + `is_base_input`. Перед вызовом программа сверяет переданные аккаунты (vault'ы пула,
+`amm_config`, observation) с данными самого пула, а после вызова ещё раз проверяет по балансам, что получено не
+меньше `min_amount_out`.
+
+**Почему обмен подписывает программа, а не администратор.** Токены лежат на хранилищах, которыми владеет PDA
+`vault_authority`. Подписать за PDA может только наша программа и только внутри своих инструкций. Администратор
+лишь разрешает обмен своей подписью (без неё `swap` не проходит), а переводом распоряжается программа.
+
+**Упрощение учебной версии.** Пока часть токенов лежит в токене B, расчёт долей при депозите и выводе смотрит только
+на баланс токена A. Поэтому после обмена админ должен вернуть токены обратно (`a_to_b = false`), прежде чем
+пользователи вносят или выводят. Автоматический учёт обоих токенов это тема недель 13-14.
+
+- Успешный обмен A → B: https://explorer.solana.com/tx/3BG9FEuHmFhKCfJM2tNMeCLjtwybTtbRFDDmoSY4SX9nsyftmbCGkqbqgrpha3D8DyGFk8Gw9YVkFyj4hV8XuWM8?cluster=devnet (отдали 100000, получили 99745 токена B)
+- Обмен, отклонённый из-за slippage: https://explorer.solana.com/tx/8ZtZpen6xfVduaScoDjzVSdQzQL1yZyDPtcASssFWZMHfizFpNw4W25RwUUVas53NjA6idxcfziRJAdDpf2AAHr?cluster=devnet (минимум 199490 при ожидаемых 99745, Raydium вернул TooLittleOutputReceived, код 6018)
+- Как изменилась цена пула: 1 → 0.9999065130238574 после A → B; обратный обмен B → A (https://explorer.solana.com/tx/2NKJN6BAHZVX3E3iDfvQCS5a919C246jwVwRxburSxubdBozUkQr4SfHjdNU94uLrWpo4mCNmFmLY1DWGLEU8sX8?cluster=devnet) вернул цену к 0.9999997653643092. Потери ≈ 0.25% комиссии пула на каждый обмен.

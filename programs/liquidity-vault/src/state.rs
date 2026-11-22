@@ -30,3 +30,19 @@ pub struct UserCard {
     pub deposited: u64,
     pub bump: u8,
 }
+
+// Неделя 12: привязка пула Raydium и второе хранилище vault.
+pub const SWAP_POOL_SEED: &[u8] = b"swap_pool";
+pub const TOKEN_VAULT_B_SEED: &[u8] = b"token_vault_b";
+
+/// Какой пул Raydium CLMM привязан к vault и где лежит токен B.
+#[account]
+#[derive(InitSpace)]
+pub struct SwapPool {
+    pub vault: Pubkey,
+    pub clmm_program: Pubkey,
+    pub pool_state: Pubkey,
+    pub mint_b: Pubkey,
+    pub token_vault_b: Pubkey,
+    pub bump: u8,
+}

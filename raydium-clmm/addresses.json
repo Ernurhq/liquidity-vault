@@ -14,5 +14,17 @@
     "upperPrice": "1.1",
     "tickLower": -1080,
     "tickUpper": 960
-  }
+  },
+  "vaultState": "6HE5w5YWX32gyhdZ1JXk8bgB3cPoPcRSunTvKwUhLFeh",
+  "swapPool": "6sEiUdbYtQUshAx3cPKoZQKapfxkmXmCdhR5pMGx1pho",
+  "tokenVaultB": "HBCxCM8xxx4qRFXoGRDjYYojF8W4XhfcSc972rxnVKVk",
+  "initSwapPoolTx": "3XQM5jLibc8pxM2uL2nVBSJYZjQ3zwjxYept9K6JuXwacBsD8Wcrot7PLdo95BHZtnkRfsaXRx7mFPhdUDWY7s39",
+  "swapTx": "3BG9FEuHmFhKCfJM2tNMeCLjtwybTtbRFDDmoSY4SX9nsyftmbCGkqbqgrpha3D8DyGFk8Gw9YVkFyj4hV8XuWM8",
+  "swapAmountIn": "100000",
+  "swapAmountOut": "99745",
+  "priceBefore": "1",
+  "priceAfter": "0.9999065130238574",
+  "swapBackTx": "2NKJN6BAHZVX3E3iDfvQCS5a919C246jwVwRxburSxubdBozUkQr4SfHjdNU94uLrWpo4mCNmFmLY1DWGLEU8sX8",
+  "swapRejectedTx": "8ZtZpen6xfVduaScoDjzVSdQzQL1yZyDPtcASssFWZMHfizFpNw4W25RwUUVas53NjA6idxcfziRJAdDpf2AAHr",
+  "swapRejectedError": "{\"InstructionError\":[1,{\"Custom\":6018}]}"
 }
