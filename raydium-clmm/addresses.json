@@ -1,0 +1,18 @@
+{
+  "mintB": "2zhNASnpKVHZDj5thrTEbexkutxApz5oU86jVnHx1fK4",
+  "mintA": "yu1GnkebxmXngwGNBXxYD4CHcxywoWChMndCXeX1GCZ",
+  "decimals": 6,
+  "poolId": "E2wznWtwnUd4BvQuEMWSYaqqA4YVGRPt47eXTbcDwuEh",
+  "poolTx": "5xogZjXFzVSS5wyydNorvmFsnoQB7G8eBJPsR1hEfRVDW3AwweYZmmfpoSwn4153k6ULBxq57MeapAwQuLjw3z6q",
+  "ammConfig": "CD4aJtX11cqTCAc83nxSPkkh5JW2yjD6uwHeovjqQ1qu",
+  "tickSpacing": 60,
+  "initialPrice": 1,
+  "positionNft": "AZGhsPzKmWVWzNwbce1DMZRWmrpBrkggqW8XUPm4qAyH",
+  "positionTx": "kNmnzfvWVwxcaGqfc4F4YisCWMnJiVqsw1cYez7VsyjYtxw9x9apx9fKqasvV4VBJPMwJUhKcFZUGmjXZqV7ecs",
+  "range": {
+    "lowerPrice": "0.9",
+    "upperPrice": "1.1",
+    "tickLower": -1080,
+    "tickUpper": 960
+  }
+}

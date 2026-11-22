@@ -126,3 +126,34 @@ Token Program, сделанные из нашей программы:
 | 2 | Token Program: Transfer | PDA `vault_authority` (через сиды) | токены ушли из vault пользователю |
 
 - Транзакция вывода: https://explorer.solana.com/tx/59DdDkGFr1n4FgfdQV9supF1nt5epaRoqJgNghE9UNSeL65S84nHuNeSQZQX3SMMDAKZNkwZx5jR6bVTTgJFcPdJ?cluster=devnet
+
+
+## Неделя 11: свои токены и CLMM-пул Raydium (devnet)
+
+Скрипты лежат в `raydium-clmm/` (SDK Raydium, запуск `npm run tokens`, `pool`, `position`).
+
+| Что | Адрес |
+|-----|-------|
+| Токен A (он же Deposit mint нашего vault) | [yu1GnkebxmXngwGNBXxYD4CHcxywoWChMndCXeX1GCZ](https://explorer.solana.com/address/yu1GnkebxmXngwGNBXxYD4CHcxywoWChMndCXeX1GCZ?cluster=devnet) |
+| Токен B (новый тестовый токен) | [2zhNASnpKVHZDj5thrTEbexkutxApz5oU86jVnHx1fK4](https://explorer.solana.com/address/2zhNASnpKVHZDj5thrTEbexkutxApz5oU86jVnHx1fK4?cluster=devnet) |
+| CLMM-пул | [E2wznWtwnUd4BvQuEMWSYaqqA4YVGRPt47eXTbcDwuEh](https://explorer.solana.com/address/E2wznWtwnUd4BvQuEMWSYaqqA4YVGRPt47eXTbcDwuEh?cluster=devnet) |
+| Транзакция создания пула | [tx](https://explorer.solana.com/tx/5xogZjXFzVSS5wyydNorvmFsnoQB7G8eBJPsR1hEfRVDW3AwweYZmmfpoSwn4153k6ULBxq57MeapAwQuLjw3z6q?cluster=devnet) |
+| Позиция (NFT) | [AZGhsPzKmWVWzNwbce1DMZRWmrpBrkggqW8XUPm4qAyH](https://explorer.solana.com/address/AZGhsPzKmWVWzNwbce1DMZRWmrpBrkggqW8XUPm4qAyH?cluster=devnet) |
+| Транзакция открытия позиции | [tx](https://explorer.solana.com/tx/kNmnzfvWVwxcaGqfc4F4YisCWMnJiVqsw1cYez7VsyjYtxw9x9apx9fKqasvV4VBJPMwJUhKcFZUGmjXZqV7ecs?cluster=devnet) |
+
+- **Уровень комиссии:** AmmConfig №0, шаг тиков 60, комиссия 0,25%.
+- **Текущая цена пула:** 1 токен A = 1 токен B (задана при создании).
+- **Выбранный диапазон:** 0.9 - 1.1 (тики -1080 ... 960), то есть ±10% вокруг текущей цены.
+- **Внесено в позицию:** 100 токенов A и около 112,17 токена B.
+
+**Почему именно такой диапазон.** По правилу из методички берём текущую цену и отступаем на обычное колебание вверх и вниз,
+5-10%. Выбран верхний край, ±10%: пара тестовая, цену двигаем только мы, а широкий коридор реже выходит из диапазона,
+и позиции не придётся часто переставлять. Узкий диапазон (например ±1%) дал бы больше комиссий на те же деньги, но цена чаще
+выходила бы за границы, и позиция переставала бы зарабатывать, пока её не передвинут.
+
+**Почему B внесено больше, чем A.** Пока цена внутри диапазона, позиция состоит из двух частей: участок ниже текущей цены
+заполняется токеном B, участок выше неё заполняется токеном A. Количество токенов считается через корень цены:
+для A это `L × (1/√P − 1/√Pверх)`, для B это `L × (√P − √Pниз)`. При диапазоне ±10% нижний участок получается чуть
+«длиннее» верхнего, поэтому B нужно примерно на 12% больше (около 112,17 против 100). Небольшую добавку даёт и округление
+границ к шагу тиков (-1080 и 960). Если цена уйдёт выше верхней границы, вся позиция станет токеном B, если ниже нижней,
+вся станет токеном A.

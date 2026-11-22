@@ -1,0 +1,23 @@
+{
+  "name": "raydium-clmm-scripts",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Неделя 11: свои токены, CLMM-пул Raydium и позиция в devnet",
+  "scripts": {
+    "tokens": "tsx src/01-create-tokens.ts",
+    "pool": "tsx src/02-create-pool.ts",
+    "position": "tsx src/03-create-position.ts",
+    "show": "tsx src/04-show.ts"
+  },
+  "dependencies": {
+    "@raydium-io/raydium-sdk-v2": "latest",
+    "@solana/spl-token": "^0.4.9",
+    "@solana/web3.js": "^1.98.0",
+    "bn.js": "^5.2.1",
+    "decimal.js": "^10.4.3"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  }
+}
