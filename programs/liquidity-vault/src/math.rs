@@ -23,6 +23,22 @@ pub fn calc_shares(amount: u64, total_assets: u64, total_shares: u64) -> Result<
     u64::try_from(result).map_err(|_| VaultError::MathOverflow.into())
 }
 
+/// Сколько токенов положено за `shares` возвращаемых share-токенов.
+///
+/// * `total_assets` — сколько токенов лежит в vault;
+/// * `total_shares` — сколько share-токенов выпущено (до сжигания).
+///
+/// Правило: shares ÷ total_shares × total_assets, в u128, округление вниз
+/// (лишняя «пылинка» остаётся в vault и не уходит тому, кто выводит).
+pub fn calc_assets(shares: u64, total_assets: u64, total_shares: u64) -> Result<u64> {
+    require!(total_shares > 0, VaultError::InsufficientShares);
+    let result = (shares as u128)
+        .checked_mul(total_assets as u128)
+        .ok_or(VaultError::MathOverflow)?
+        / (total_shares as u128);
+    u64::try_from(result).map_err(|_| VaultError::MathOverflow.into())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -53,5 +69,32 @@ mod tests {
     fn no_overflow_on_big_numbers() {
         let half = u64::MAX / 2;
         assert_eq!(calc_shares(half, u64::MAX, u64::MAX).unwrap(), half);
+    }
+
+    #[test]
+    fn withdraw_all_returns_everything() {
+        assert_eq!(calc_assets(1000, 1100, 1000).unwrap(), 1100);
+    }
+
+    #[test]
+    fn withdraw_with_profit() {
+        // 800 долей из 1600 при 1760 токенов -> 880
+        assert_eq!(calc_assets(800, 1760, 1600).unwrap(), 880);
+    }
+
+    #[test]
+    fn withdraw_rounds_down() {
+        // 1 * 1100 / 1000 = 1.1 -> 1
+        assert_eq!(calc_assets(1, 1100, 1000).unwrap(), 1);
+    }
+
+    #[test]
+    fn withdraw_no_overflow_on_big_numbers() {
+        assert_eq!(calc_assets(u64::MAX, u64::MAX, u64::MAX).unwrap(), u64::MAX);
+    }
+
+    #[test]
+    fn withdraw_with_no_shares_fails() {
+        assert!(calc_assets(1, 100, 0).is_err());
     }
 }

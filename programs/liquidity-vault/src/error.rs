@@ -8,4 +8,6 @@ pub enum VaultError {
     ZeroAmount,
     #[msg("Переполнение при вычислении")]
     MathOverflow,
+    #[msg("Недостаточно share-токенов")]
+    InsufficientShares,
 }

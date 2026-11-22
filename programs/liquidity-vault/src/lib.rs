@@ -28,4 +28,9 @@ pub mod liquidity_vault {
     pub fn deposit(ctx: Context<Deposit>, amount: u64) -> Result<()> {
         instructions::deposit::handle_deposit(ctx, amount)
     }
+
+    /// Сжигает share-токены пользователя и отдаёт ему его долю токенов из vault.
+    pub fn withdraw(ctx: Context<Withdraw>, shares: u64) -> Result<()> {
+        instructions::withdraw::handle_withdraw(ctx, shares)
+    }
 }

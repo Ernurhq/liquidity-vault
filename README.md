@@ -98,3 +98,31 @@ yarn init-devnet          # создаст токен, vault, карточку �
 Пример: в vault 1100 токенов и 1000 share-токенов, вносим 110 → получаем 100 share-токенов.
 
 - Транзакция депозита: https://explorer.solana.com/tx/3avq3vYbUuvzhocq8DE2G7mB3B9L7NGNBtNJE9LRJDzfPKebzCy7on8s1e26rdMWyC6YGueN2YyHoKCMWGBAMQez?cluster=devnet
+
+## Неделя 10: вывод из vault и CPI
+
+Действие `withdraw(shares)`:
+
+1. посчитать, сколько токенов положено: `shares × токенов в vault ÷ выпущено share` (u128, округление вниз);
+2. **CPI №1 — `burn`**: Token Program сжигает share-токены пользователя. Подписывает сам пользователь;
+3. **CPI №2 — `transfer`**: Token Program переводит токены из `token_vault` пользователю.
+   Подписывает программа: она передаёт сиды `["vault_authority", vault_state, bump]`, и рантайм
+   признаёт PDA `vault_authority` подписавшим (у PDA нет приватного ключа);
+4. обновить учёт `total_deposited` и `card.deposited` (`saturating_sub`, в минус не уходит).
+   Вывод нуля и вывод больше своих долей запрещены.
+
+Почему администратор не может забрать токены своей подписью: `token_vault` принадлежит PDA
+`vault_authority`, а подписать за PDA может только программа и только внутри своих инструкций.
+Админской подписи Token Program не принимает, а инструкции «забрать всё» в программе нет.
+
+### Какие CPI видны в транзакции вывода
+
+В Explorer на странице транзакции в блоке *Instruction #1 → Inner Instructions* видны два вызова
+Token Program, сделанные из нашей программы:
+
+| # | Inner instruction | Кто подписал | Что происходит |
+|---|-------------------|--------------|----------------|
+| 1 | Token Program: Burn | пользователь | share-токены сожжены |
+| 2 | Token Program: Transfer | PDA `vault_authority` (через сиды) | токены ушли из vault пользователю |
+
+- Транзакция вывода: https://explorer.solana.com/tx/59DdDkGFr1n4FgfdQV9supF1nt5epaRoqJgNghE9UNSeL65S84nHuNeSQZQX3SMMDAKZNkwZx5jR6bVTTgJFcPdJ?cluster=devnet
