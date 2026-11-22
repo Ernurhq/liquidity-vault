@@ -194,3 +194,46 @@ tick-массивы пула как remaining accounts; данные: discrimina
 - Успешный обмен A → B: https://explorer.solana.com/tx/3BG9FEuHmFhKCfJM2tNMeCLjtwybTtbRFDDmoSY4SX9nsyftmbCGkqbqgrpha3D8DyGFk8Gw9YVkFyj4hV8XuWM8?cluster=devnet (отдали 100000, получили 99745 токена B)
 - Обмен, отклонённый из-за slippage: https://explorer.solana.com/tx/8ZtZpen6xfVduaScoDjzVSdQzQL1yZyDPtcASssFWZMHfizFpNw4W25RwUUVas53NjA6idxcfziRJAdDpf2AAHr?cluster=devnet (минимум 199490 при ожидаемых 99745, Raydium вернул TooLittleOutputReceived, код 6018)
 - Как изменилась цена пула: 1 → 0.9999065130238574 после A → B; обратный обмен B → A (https://explorer.solana.com/tx/2NKJN6BAHZVX3E3iDfvQCS5a919C246jwVwRxburSxubdBozUkQr4SfHjdNU94uLrWpo4mCNmFmLY1DWGLEU8sX8?cluster=devnet) вернул цену к 0.9999997653643092. Потери ≈ 0.25% комиссии пула на каждый обмен.
+
+## Неделя 13: позиция в CLMM-пуле
+
+Теперь vault сам становится провайдером ликвидности: открывает позицию в выбранном ценовом диапазоне нашего
+пула Raydium, собирает комиссии и закрывает позицию. NFT позиции принадлежит PDA `vault_authority`.
+Все действия только для администратора. Вызовы Raydium собраны вручную по официальному IDL
+(как на неделе 12), подписывает программа через `invoke_signed`.
+
+**Новый аккаунт.** `LpPosition` (PDA `["lp_position", vault_state]`) хранит NFT позиции, её адрес в Raydium,
+границы диапазона (тики), ликвидность и флаг `is_open`. Одна позиция за раз. Прежние аккаунты не менялись.
+
+**Действия:**
+- `init_lp_position` (один раз): создаёт запись; пул должен быть привязан (`init_swap_pool`, неделя 12).
+- `open_lp_position(tick_lower, tick_upper, начала tick-массивов, liquidity, amount_a_max, amount_b_max)`:
+  `open_position_with_token22_nft` Raydium. `amount_*_max` это максимум токенов, который vault готов отдать;
+  после вызова программа ещё раз проверяет по балансам, что потрачено не больше, и читает созданную позицию
+  (NFT, пул, тики, ликвидность), сверяя с запросом.
+- `collect_lp_fees`: `decrease_liquidity_v2` с нулевой ликвидностью забирает накопленные комиссии в хранилища.
+- `close_lp_position(min_amount_a, min_amount_b)`: выводит всю ликвидность (минимум задаётся, плюс своя проверка по
+  балансам), затем `close_position` сжигает NFT, и аренда возвращается на `vault_authority`.
+
+**Кто платит и подписывает.** В Raydium «плательщик» открытия позиции это тот, чьи токены уходят в пул. У нас это PDA
+`vault_authority`: он владеет хранилищами токенов, подписывает переводы и платит аренду за новые аккаунты (позиция,
+tick-массивы), поэтому клиентский скрипт пополняет его на ~0.3 SOL. Админ только разрешает операцию своей подписью.
+NFT-минт новой позиции это свежий ключ, который подписывает транзакцию.
+
+**Как выбран диапазон.** Текущая цена ±5% (правило из методички: отступить на обычное колебание цены). Цены
+переводятся в тики и округляются к шагу тиков пула. Ликвидность считает клиент (SDK Raydium) из имеющихся в vault
+токенов, с запасом 1% на slippage.
+
+**Упрощение учебной версии.** Пока токены в позиции, пользователи не могут вывести средства: перед выводом админ закрывает
+позицию и меняет токен B обратно в A (`swap` недели 12). Расчёт долей смотрит только на баланс токена A, поэтому
+комиссии, полученные в токене A, сразу увеличивают цену share-токена, а комиссии в токене B учитываются после обмена в A.
+Ребалансировка выполняется вручную (скрипт `npm run lp-rebalance`: закрыть и открыть вокруг новой цены).
+
+Сценарий: `lp-init` → (обмен части A в B) → `lp-open` → `lp-trade` (обмены с кошелька трейдера) → `lp-collect` → `lp-close`;
+затем сдвиг цены за диапазон, `lp-rebalance`.
+
+- Выбранный диапазон: ±5% вокруг цены 0.9953: цены 0.9456–1.0451, тики −600…480 (шаг 60). Для демонстрации ребалансировки позже использован узкий диапазон ±1%.
+- Открытие позиции: https://explorer.solana.com/tx/3VBPWVsAkrS5zh4W7Lsepkbax2kT5tE7zy9HV3iDcyCs4RFgTKjcjDKsQ8zGevjjJqfraxRAzhBvdWCifAiE8Am4?cluster=devnet (в позицию ушло A=4619060, B=4826591, ликвидность 177311253; NFT позиции принадлежит PDA vault_authority)
+- Комиссии (сбор): https://explorer.solana.com/tx/4HM1SGkg7bbbVH3X59oM9H3GJJLiwX4EYoBhjAq5x1osJX1MJPSzCQ5hgBUhVP1uHSSqRoqFrpZ5AF4g2VjbbosB?cluster=devnet (после 6 обменов с кошелька трейдера, объём ≈ 11,95 токена, комиссия пула 0.25%: заработано A=966 и B=959 в минимальных единицах)
+- Закрытие позиции: https://explorer.solana.com/tx/3Y4NDAWPJnvwEKTsCqpBQMJjLm74wrBd87WSSe2ra1iyjrvGb4Yd6Y4qGMGyQXhwp8c6jKL5evNZU6ngaScf5sQi?cluster=devnet (вернулось A=4620207 и B=4825449, при минимуме на 1% меньше ожидаемого). Последнее закрытие: https://explorer.solana.com/tx/4BEmk6GFznZYt3qwYJkankFdXVDzykfFytPAd4cPaE2YvekXwUrqawfAKTjYHddEYm9yBts61JZw7VjDodPZaEwH?cluster=devnet (вернулось A=4678975, B=4997307). После обратного обмена B → A (https://explorer.solana.com/tx/32Q348XVJpJ2y2TPeuT95JtEQdUSsYm2tUJnuTb7R3AJWXHkcjibZimiyKM2ZcmzrvPW9skEG6nAp4Go8j39aQq8?cluster=devnet) в vault 10519499 токена A и 0 токена B (после внесения 10 токенов было 10499499).
+- Ребалансировка: обмен с кошелька трейдера (20 токенов A → B) сдвинул цену с 0.9953 до 0.9815, ниже диапазона 0.9822–1.0060 (позиция целиком превратилась в токен A). Ребалансировка: закрытие https://explorer.solana.com/tx/4aFzeryKAQRpa4hqt2hKodLHYf1owAiZYpTD1gxCtnpVywBBCJyJjEqzk2UNsXajdF24wq33uwAjxnhB3MH9tLbv?cluster=devnet, обмен через vault A → B (https://explorer.solana.com/tx/2VSqXYSu1UTehqTnf4om6ayomZxCEhxS8ZAgiiJoLU1LbJEZBZo8uE9VQ6JD1dMgeExxPCxrSCvHGCndBhcYHdRy?cluster=devnet), новая позиция в диапазоне ±1% вокруг цены 0.9768: https://explorer.solana.com/tx/2mjHHF3wH6hRGMRsZ7dXuyyQ5AoKB74iChUd9kmqhVq4JGpSauMdDg2MXXX4THw3FBtfaoJcUZ3zrHPM2GjdH7T9?cluster=devnet.

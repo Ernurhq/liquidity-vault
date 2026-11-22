@@ -16,4 +16,10 @@ pub enum VaultError {
     SlippageExceeded,
     #[msg("В хранилище недостаточно токенов для обмена")]
     InsufficientFunds,
+    #[msg("Позиция уже открыта: сначала закройте её")]
+    PositionAlreadyOpen,
+    #[msg("Нет открытой позиции")]
+    NoOpenPosition,
+    #[msg("Позиция Raydium не подходит или переданы чужие аккаунты")]
+    InvalidPosition,
 }

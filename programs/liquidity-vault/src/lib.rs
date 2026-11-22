@@ -4,6 +4,7 @@ pub mod error;
 pub mod instructions;
 pub mod math;
 pub mod raydium;
+pub mod raydium_lp;
 pub mod state;
 
 pub use instructions::*;
@@ -49,5 +50,47 @@ pub mod liquidity_vault {
         sqrt_price_limit_x64: u128,
     ) -> Result<()> {
         instructions::swap_on_raydium::handle_swap(ctx, a_to_b, amount_in, min_amount_out, sqrt_price_limit_x64)
+    }
+
+    /// Неделя 13: админ создаёт запись о позиции vault (один раз).
+    pub fn init_lp_position(ctx: Context<InitLpPosition>) -> Result<()> {
+        instructions::lp_position::handle_init_lp_position(ctx)
+    }
+
+    /// Неделя 13: vault открывает позицию в CLMM-пуле Raydium (CPI, подписывает PDA).
+    pub fn open_lp_position(
+        ctx: Context<OpenLpPosition>,
+        tick_lower: i32,
+        tick_upper: i32,
+        tick_array_lower_start: i32,
+        tick_array_upper_start: i32,
+        liquidity: u128,
+        amount_a_max: u64,
+        amount_b_max: u64,
+    ) -> Result<()> {
+        instructions::lp_position::handle_open_lp_position(
+            ctx,
+            tick_lower,
+            tick_upper,
+            tick_array_lower_start,
+            tick_array_upper_start,
+            liquidity,
+            amount_a_max,
+            amount_b_max,
+        )
+    }
+
+    /// Неделя 13: vault забирает накопленные комиссии позиции.
+    pub fn collect_lp_fees(ctx: Context<CollectLpFees>) -> Result<()> {
+        instructions::lp_position::handle_collect_lp_fees(ctx)
+    }
+
+    /// Неделя 13: vault выводит всю ликвидность и закрывает позицию.
+    pub fn close_lp_position(
+        ctx: Context<CloseLpPosition>,
+        min_amount_a: u64,
+        min_amount_b: u64,
+    ) -> Result<()> {
+        instructions::lp_position::handle_close_lp_position(ctx, min_amount_a, min_amount_b)
     }
 }

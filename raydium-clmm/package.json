@@ -9,7 +9,14 @@
     "position": "tsx src/03-create-position.ts",
     "show": "tsx src/04-show.ts",
     "vault-init": "tsx src/05-vault-init-swap.ts",
-    "vault-swap": "tsx src/06-vault-swap.ts"
+    "vault-swap": "tsx src/06-vault-swap.ts",
+    "lp-init": "tsx src/07-lp-init.ts",
+    "lp-open": "tsx src/08-lp-open.ts",
+    "lp-trade": "tsx src/09-lp-trade.ts",
+    "lp-collect": "tsx src/10-lp-collect.ts",
+    "lp-close": "tsx src/11-lp-close.ts",
+    "lp-rebalance": "tsx src/12-lp-rebalance.ts",
+    "lp-show": "tsx src/13-lp-show.ts"
   },
   "dependencies": {
     "@anchor-lang/core": "^1.0.2",

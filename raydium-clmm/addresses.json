@@ -19,12 +19,41 @@
   "swapPool": "6sEiUdbYtQUshAx3cPKoZQKapfxkmXmCdhR5pMGx1pho",
   "tokenVaultB": "HBCxCM8xxx4qRFXoGRDjYYojF8W4XhfcSc972rxnVKVk",
   "initSwapPoolTx": "3XQM5jLibc8pxM2uL2nVBSJYZjQ3zwjxYept9K6JuXwacBsD8Wcrot7PLdo95BHZtnkRfsaXRx7mFPhdUDWY7s39",
-  "swapTx": "3BG9FEuHmFhKCfJM2tNMeCLjtwybTtbRFDDmoSY4SX9nsyftmbCGkqbqgrpha3D8DyGFk8Gw9YVkFyj4hV8XuWM8",
-  "swapAmountIn": "100000",
-  "swapAmountOut": "99745",
-  "priceBefore": "1",
-  "priceAfter": "0.9999065130238574",
-  "swapBackTx": "2NKJN6BAHZVX3E3iDfvQCS5a919C246jwVwRxburSxubdBozUkQr4SfHjdNU94uLrWpo4mCNmFmLY1DWGLEU8sX8",
+  "swapTx": "2VSqXYSu1UTehqTnf4om6ayomZxCEhxS8ZAgiiJoLU1LbJEZBZo8uE9VQ6JD1dMgeExxPCxrSCvHGCndBhcYHdRy",
+  "swapAmountIn": "5122038",
+  "swapAmountOut": "5002593",
+  "priceBefore": "0.9814508416966121",
+  "priceAfter": "0.9768112049763831",
+  "swapBackTx": "32Q348XVJpJ2y2TPeuT95JtEQdUSsYm2tUJnuTb7R3AJWXHkcjibZimiyKM2ZcmzrvPW9skEG6nAp4Go8j39aQq8",
   "swapRejectedTx": "8ZtZpen6xfVduaScoDjzVSdQzQL1yZyDPtcASssFWZMHfizFpNw4W25RwUUVas53NjA6idxcfziRJAdDpf2AAHr",
-  "swapRejectedError": "{\"InstructionError\":[1,{\"Custom\":6018}]}"
+  "swapRejectedError": "{\"InstructionError\":[1,{\"Custom\":6018}]}",
+  "lpPositionPda": "9JPMArNFV9nsvBcMCLUWg3vGwDqLp2YFESnp5qGW4qFw",
+  "lpInitTx": "3aZpKERMvghbsLNCAZtvv3SLEuQJcSxcq11V1pJFRuK6VhtndfAz4ScUNqykEBw7BQEcdf7Q5b88ZHLZHhH4bQhx",
+  "lpNft": "9nGqeofh7mqpqbKELo36jCYusbdagwAvYH1k1Xbx9vN4",
+  "lpOpenTx": "2mjHHF3wH6hRGMRsZ7dXuyyQ5AoKB74iChUd9kmqhVq4JGpSauMdDg2MXXX4THw3FBtfaoJcUZ3zrHPM2GjdH7T9",
+  "lpRange": {
+    "lowerPrice": "0.967043092926619269",
+    "upperPrice": "0.986579317026146931",
+    "tickLower": -360,
+    "tickUpper": -120
+  },
+  "lpDepositedA": "4678976",
+  "lpDepositedB": "4997308",
+  "lpCollectTx": "4HM1SGkg7bbbVH3X59oM9H3GJJLiwX4EYoBhjAq5x1osJX1MJPSzCQ5hgBUhVP1uHSSqRoqFrpZ5AF4g2VjbbosB",
+  "lpFeesA": "966",
+  "lpFeesB": "959",
+  "lpCloseTx": "4BEmk6GFznZYt3qwYJkankFdXVDzykfFytPAd4cPaE2YvekXwUrqawfAKTjYHddEYm9yBts61JZw7VjDodPZaEwH",
+  "lpReturnedA": "4678975",
+  "lpReturnedB": "4997307",
+  "lpRebalance": {
+    "oldRange": {
+      "lowerPrice": "0.98216191624470232020724671283794960595253457078678030617271",
+      "upperPrice": "1.00601773426881816522250629299913549115772870482995555190345",
+      "tickLower": -180,
+      "tickUpper": 60
+    },
+    "priceAtRebalance": "0.9814508416966121",
+    "closeTx": "4aFzeryKAQRpa4hqt2hKodLHYf1owAiZYpTD1gxCtnpVywBBCJyJjEqzk2UNsXajdF24wq33uwAjxnhB3MH9tLbv",
+    "openTx": "2mjHHF3wH6hRGMRsZ7dXuyyQ5AoKB74iChUd9kmqhVq4JGpSauMdDg2MXXX4THw3FBtfaoJcUZ3zrHPM2GjdH7T9"
+  }
 }

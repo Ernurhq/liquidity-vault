@@ -46,3 +46,21 @@ pub struct SwapPool {
     pub token_vault_b: Pubkey,
     pub bump: u8,
 }
+
+// Неделя 13: позиция vault в CLMM-пуле Raydium.
+pub const LP_POSITION_SEED: &[u8] = b"lp_position";
+
+/// Запись о позиции vault: какой NFT, в каком диапазоне, сколько ликвидности. Одна позиция за раз.
+#[account]
+#[derive(InitSpace)]
+pub struct LpPosition {
+    pub vault: Pubkey,
+    pub nft_mint: Pubkey,
+    pub nft_account: Pubkey,
+    pub personal_position: Pubkey,
+    pub tick_lower: i32,
+    pub tick_upper: i32,
+    pub liquidity: u128,
+    pub is_open: bool,
+    pub bump: u8,
+}
